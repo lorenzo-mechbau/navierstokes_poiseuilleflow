@@ -1,0 +1,44 @@
+gfx read node TimeStep_0.part0.exnode;
+gfx read elem TimeStep_0.part0.exelem;
+
+gfx define faces egroup FluidRegion
+
+gfx create window 1
+gfx modify window 1 layout simple ortho_axes z -y eye_spacing 0.25 height 1000 width 1400
+gfx modify window 1 view eye_point -5.0 0.7 4.5 interest_point 0 0 1.5 up_vector 0.1 0.99 -0.05 view_angle 40 near_clipping_plane 0.5 far_clipping_plane 20.0
+
+gfx define field "velocity" component FluidDependent.1 FluidDependent.2 FluidDependent.3
+gfx define field "pressure" component FluidDependent.4
+
+gfx define field "magnitude_velocity" magnitude field velocity
+
+gfx create spectrum flow
+gfx modify spectrum flow clear overwrite_colour
+gfx modify spectrum flow linear reverse range 0.0 1.00 extend_above extend_below rainbow colour_range 0 1
+
+gfx create spectrum pressure
+gfx modify spectrum pressure clear overwrite_colour
+gfx modify spectrum pressure linear reverse range -0.15 0.05 extend_above extend_below rainbow colour_range 0 1
+
+#Display lines
+gfx modify g_element "FluidRegion" lines coordinate FluidGeometry 
+
+#Display flow glyphs
+gfx modify g_element FluidRegion node_points glyph arrow_solid general size "0.03*0.03*0.03" centre 0,0,0 font default orientation velocity select_on material default data magnitude_velocity scale_factors "0.1*0.05*0.05" selected_material default_selected spectrum flow
+
+#gfx modify g_element FluidRegion surfaces select_on material default data pressure spectrum pressure selected_material default_selected render_shaded;
+gfx modify g_element FluidRegion lines exterior;
+
+#Read in the sequence of nodal positions.
+for($i=0; $i < 50; $i=$i+1)
+  {
+	 $filename = sprintf("./TimeStep_%d.part0.exnode", $i);
+	 print "Reading $filename time $i\n";
+	 gfx read node "$filename"
+	 $filename = sprintf("./PoiseuilleFlow_%d.jpg", $i);
+	 gfx print window 1 jpg file "$filename" height 1000 width 1400
+  }
+  
+gfx edit scene
+gfx edit spectrum
+

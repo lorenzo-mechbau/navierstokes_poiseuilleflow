@@ -1,0 +1,180 @@
+<?xml version='1.0'?>
+<model cmeta:id="PoiseuilleInletBC" name="PoiseuilleInletBC" xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cellml="http://www.cellml.org/cellml/1.1#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#">
+    <component name="main">
+        <!-- Units -->
+        <units name="per_second">
+            <unit exponent="-1" units="second"/>
+        </units>
+        <units name="metre_per_second">
+            <unit exponent="1" units="metre"/>
+            <unit exponent="-1" units="second"/>
+        </units>
+        <units name="poiseuille">
+            <unit exponent="1" units="kilogram"/>
+            <unit exponent="-1" units="metre"/>
+            <unit exponent="-1" units="second"/>
+        </units>
+        <units name="pascal_per_metre">
+            <unit exponent="1" units="pascal"/>
+            <unit exponent="-1" units="metre"/>
+        </units>
+        <!-- Variables-->
+        <variable name="time" units="second"/>
+        <variable initial_value="0.0" name="x" units="metre"/>
+        <variable initial_value="0.0" name="y" units="metre"/>
+        <variable name="radius" units="metre"/>
+        <variable initial_value="1.0" name="pipeRadius" units="metre"/>
+        <variable initial_value="1.0" name="length" units="metre"/>
+        <variable initial_value="1.0" name="dynamicViscosity" units="poiseuille"/>
+        <variable name="maxVelocity" units="metre_per_second"/>
+        <variable name="dPdL" units="pascal_per_metre"/>
+        <variable initial_value="0.5" name="A" units="metre_per_second"/>
+        <variable initial_value="0.5" name="B" units="metre_per_second"/>
+        <variable initial_value="10.0" name="C" units="second"/>
+        <variable initial_value="0.0" name="dummy" units="metre"/>
+        <variable name="inletx" units="metre_per_second"/>
+        <variable name="inlety" units="metre_per_second"/>
+        <variable name="inletz" units="metre_per_second"/>
+        <!-- Equations-->
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <ci>maxVelocity</ci>
+                <piecewise>
+                    <piece>
+                        <apply>
+                            <plus/>
+                            <ci>A</ci>
+                            <ci>B</ci>
+                        </apply>
+                        <apply>
+                            <gt/>
+                            <ci>time</ci>
+                            <ci>C</ci>
+                        </apply>
+                    </piece>
+                    <otherwise>
+                        <apply>
+                            <plus/>
+                            <ci>A</ci>
+                            <apply>
+                                <times/>
+                                <ci>B</ci>
+                                <apply>
+                                    <sin/>
+                                    <apply>
+                                        <minus/>
+                                        <apply>
+                                            <divide/>
+                                            <apply>
+                                                <times/>
+                                                <pi/>
+                                                <ci>time</ci>
+                                            </apply>
+                                            <ci>C</ci>
+                                        </apply>
+                                        <apply>
+                                            <divide/>
+                                            <pi/>
+                                            <cn cellml:units="dimensionless">2.0</cn>
+                                        </apply>
+                                    </apply>
+                                </apply>
+                            </apply>
+                        </apply>
+                    </otherwise>
+                </piecewise>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>dPdL</ci>
+                <apply>
+                    <divide/>
+                    <apply>
+                        <times/>
+                        <cn cellml:units="dimensionless">4.0</cn>
+                        <ci>dynamicViscosity</ci>
+                        <ci>maxVelocity</ci>
+                    </apply>
+                    <apply>
+                        <times/>
+                        <ci>pipeRadius</ci>
+                        <ci>pipeRadius</ci>
+                    </apply>
+                </apply>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>radius</ci>
+                <apply>
+                    <root/>
+                    <apply>
+                        <plus/>
+                        <apply>
+                            <times/>
+                            <ci>x</ci>
+                            <ci>x</ci>
+                        </apply>
+                        <apply>
+                            <times/>
+                            <ci>y</ci>
+                            <ci>y</ci>
+                        </apply>
+                    </apply>
+                </apply>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>inletx</ci>
+                <cn cellml:units="metre_per_second">0.0</cn>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>inlety</ci>
+                <cn cellml:units="metre_per_second">0.0</cn>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>inletz</ci>
+                <apply>
+                    <divide/>
+                    <apply>
+                        <times/>
+                        <cn cellml:units="dimensionless">0.25</cn>
+                        <ci>dPdL</ci>
+                        <apply>
+                            <minus/>
+                            <apply>
+                                <times/>
+                                <ci>pipeRadius</ci>
+                                <ci>pipeRadius</ci>
+                            </apply>
+                            <apply>
+                                <times/>
+                                <ci>radius</ci>
+                                <ci>radius</ci>
+                            </apply>
+                        </apply>
+                    </apply>
+                    <ci>dynamicViscosity</ci>
+                </apply>
+            </apply>
+            <apply>
+                <eq/>
+                <apply>
+                    <diff/>
+                    <bvar>
+                        <ci>time</ci>
+                    </bvar>
+                    <ci>dummy</ci>
+                </apply>
+                <apply>
+                    <plus/>
+                    <ci>inletx</ci>
+                    <ci>inlety</ci>
+                    <ci>inletz</ci>
+                </apply>
+            </apply>
+        </math>
+    </component>
+</model>
