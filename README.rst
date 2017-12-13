@@ -32,7 +32,7 @@ Verifying the example
 
 Results can be visualised by running `visualise.cmgui <./src/python/visualisePoiseuille.cmgui>`_ with the `Cmgui visualiser <http://physiomeproject.org/software/opencmiss/cmgui/download>`_.
 
-.. figure:: docs/images/PoiseuilleFlow_0.png
+.. figure:: docs/images/PoiseuilleFlow_0.jpg
    :align: center
    :width: 30%
 
