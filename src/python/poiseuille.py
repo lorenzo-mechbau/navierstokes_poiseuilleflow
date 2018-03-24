@@ -14,7 +14,7 @@ from opencmiss.iron import iron
 
 # Set the number of elements in the mesh
 numberOfSquareElements = 2
-numberOfArmElements = 2
+numberOfArmElements = 1
 numberOfLengthElements = 3
 # Set the Reynolds number
 Re = 1000
@@ -143,6 +143,13 @@ fluidProblemUserNumber = 1
 #================================================================================================================================
 #  Initialise OpenCMISS
 #================================================================================================================================
+
+# Set the OpenCMISS random seed so that we can test this example by using the
+# same parallel decomposition
+numberOfRandomSeeds = iron.RandomSeedsSizeGet()
+randomSeeds = [0]*numberOfRandomSeeds
+randomSeeds[0] = 100
+iron.RandomSeedsSet(randomSeeds)
 
 # Get the computational nodes info
 numberOfComputationalNodes = iron.ComputationalNumberOfNodesGet()
@@ -711,21 +718,21 @@ for zNodeIdx in range(1,numberOfLengthElements*(numberOfNodesXi-1)+2):
                                  (numberOfArmElements*(numberOfNodesXi-1))+squareRadius
                         xPosition = radius*math.cos(theta)
                         yPosition = radius*math.sin(theta)
-                fluidGeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                                                             1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,1,xPosition)
-                fluidGeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                                                             1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,2,yPosition)
-                if (numberOfDimensions == 2):
-                    if (debug):
-                        print('      Node        %d:' % (nodeNumber))
-                        print('         Position         = [ %.2f, %.2f ]' % (xPosition,yPosition))
-                else:
-                    zPosition = (zNodeIdx-1)*lengthSize/(numberOfLengthElements*(numberOfNodesXi-1))
                     fluidGeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                                                                 1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,3,zPosition)
-                    if (debug):
-                        print('      Node        %d:' % (nodeNumber))
-                        print('         Position         = [ %.2f, %.2f, %.2f ]' % (xPosition,yPosition,zPosition))
+                                                                 1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,1,xPosition)
+                    fluidGeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                                                                 1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,2,yPosition)
+                    if (numberOfDimensions == 2):
+                        if (debug):
+                            print('      Node        %d:' % (nodeNumber))
+                            print('         Position         = [ %.2f, %.2f ]' % (xPosition,yPosition))
+                    else:
+                        zPosition = (zNodeIdx-1)*lengthSize/(numberOfLengthElements*(numberOfNodesXi-1))
+                        fluidGeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                                                                     1,iron.GlobalDerivativeConstants.NO_GLOBAL_DERIV,nodeNumber,3,zPosition)
+                        if (debug):
+                            print('      Node        %d:' % (nodeNumber))
+                            print('         Position         = [ %.2f, %.2f, %.2f ]' % (xPosition,yPosition,zPosition))
 
     #Now handle square
     for yNodeIdx in range(2,numberOfSquareElements*(numberOfNodesXi-1)+1):

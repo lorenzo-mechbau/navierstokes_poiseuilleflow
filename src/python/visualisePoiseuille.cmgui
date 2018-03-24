@@ -1,5 +1,15 @@
-gfx read node TimeStep_0.part0.exnode;
-gfx read elem TimeStep_0.part0.exelem;
+$numProcs = 2;
+
+for($rank=0; $rank < $numProcs; $rank=$rank+1)
+   {
+   $filename = sprintf("./TimeStep_0.part%d.exnode", $rank);
+   gfx read node "$filename";
+   }
+for($rank=0; $rank < $numProcs; $rank=$rank+1)
+   {
+   $filename = sprintf("./TimeStep_0.part%d.exelem", $rank);
+   gfx read elem "$filename";
+   }
 
 gfx define faces egroup FluidRegion
 
@@ -32,9 +42,12 @@ gfx modify g_element FluidRegion lines exterior;
 #Read in the sequence of nodal positions.
 for($i=0; $i < 50; $i=$i+1)
   {
-	 $filename = sprintf("./TimeStep_%d.part0.exnode", $i);
-	 print "Reading $filename time $i\n";
-	 gfx read node "$filename"
+	for($rank=0; $rank < $numProcs; $rank=$rank+1)
+ 	  {
+		$filename = sprintf("./TimeStep_%d.part%d.exnode", $i, $rank);
+	 	print "Reading $filename time $i\n";
+	 	gfx read node "$filename"
+	 }
 	 $filename = sprintf("./PoiseuilleFlow_%d.jpg", $i);
 	 gfx print window 1 jpg file "$filename" height 1000 width 1400
   }
