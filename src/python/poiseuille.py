@@ -22,10 +22,11 @@ Re = 1000
 maxInletFlow = 1.0
 # Time stepping parameters
 startTime = 0.0
-stopTime  = 5.0
+stopTime  = 2.0
 timeStep  = 0.1
 
 # Override with command line arguments if need be
+print sys.argv
 if len(sys.argv) > 1:
     if len(sys.argv) > 9:
         sys.exit('Error: too many arguments - currently only accepting 8 options: numberOfSquareElements numberOfArmElements numberOfLengthElements Re maxInletFlow startTime stopTime timeStep')        
@@ -45,15 +46,15 @@ if len(sys.argv) > 1:
     if len(sys.argv) > 8:
         timeStep = float(sys.argv[8])
 
-linear = 1
-quadratic = 2
+LINEAR = 1
+QUADRATIC = 2
 
 pipeRadius = 1.0
 lengthSize = 3.0
 squareSizeRatio = 0.500
 
-fluidVelocityInterpolation = quadratic
-fluidPressureInterpolation = linear
+fluidVelocityInterpolation = QUADRATIC
+fluidPressureInterpolation = LINEAR
 
 ## Inlet velocity parameters
 A = maxInletFlow/2.0
@@ -203,9 +204,9 @@ fluidVelocityBasis = iron.Basis()
 fluidVelocityBasis.CreateStart(fluidVelocityBasisUserNumber)
 fluidVelocityBasis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 fluidVelocityBasis.numberOfXi = numberOfDimensions
-if (fluidVelocityInterpolation == linear):
+if (fluidVelocityInterpolation == LINEAR):
     fluidVelocityBasis.interpolationXi = [iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*numberOfDimensions
-elif (fluidVelocityInterpolation == quadratic):
+elif (fluidVelocityInterpolation == QUADRATIC):
     fluidVelocityBasis.interpolationXi = [iron.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]*numberOfDimensions
 else:
     print('Invalid velocity interpolation')
@@ -310,7 +311,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                     localNodes[localNodeIdx101] = localNodes[localNodeIdx100]+numberOfNodesPerLength*(numberOfNodesXi-1)
                     localNodes[localNodeIdx011] = localNodes[localNodeIdx010]+numberOfNodesPerLength*(numberOfNodesXi-1)
                     localNodes[localNodeIdx111] = localNodes[localNodeIdx110]+numberOfNodesPerLength*(numberOfNodesXi-1)
-                if(fluidVelocityInterpolation == quadratic):
+                if(fluidVelocityInterpolation == QUADRATIC):
                     localNodes[1] = localNodes[localNodeIdx100] - 1
                     localNodes[3] = localNodes[localNodeIdx000] + numberOfSquareElements*(numberOfNodesXi-1)
                     localNodes[4] = localNodes[1] + numberOfSquareElements*(numberOfNodesXi-1)
@@ -335,7 +336,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                     linearNodes = [localNodes[localNodeIdx000],localNodes[localNodeIdx100],localNodes[localNodeIdx010],localNodes[localNodeIdx110]]
                     if (debug):
                         print('    Element %8d; Nodes: %8d, %8d, %8d, %8d' % (elementNumber,linearNodes[0],linearNodes[1],linearNodes[2],linearNodes[3]))
-                        if (fluidVelocityInterpolation==quadratic):
+                        if (fluidVelocityInterpolation==QUADRATIC):
                             print('                      Nodes: %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d' % \
                                   (localNodes[0],localNodes[1],localNodes[2],localNodes[3],localNodes[4],localNodes[5],localNodes[6],localNodes[7],localNodes[8]))
                 else:
@@ -344,7 +345,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                     if (debug):
                         print('    Element %8d; Nodes: %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d' % \
                               (elementNumber,linearNodes[0],linearNodes[1],linearNodes[2],linearNodes[3],linearNodes[4],linearNodes[5],linearNodes[6],linearNodes[7]))
-                        if (fluidVelocityInterpolation==quadratic):
+                        if (fluidVelocityInterpolation==QUADRATIC):
                             print('                      Nodes: %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d' % \
                                   (localNodes[0],localNodes[1],localNodes[2],localNodes[3],localNodes[4],localNodes[5],localNodes[6],localNodes[7],localNodes[8]))
                             print('                             %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d' % \
@@ -365,7 +366,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                                       (zElementIdx-1)*numberOfNodesPerLength*(numberOfNodesXi-1)
         localNodes[localNodeIdx110] = numberOfNodesPerBlock+\
                                       (zElementIdx-1)*numberOfNodesPerLength*(numberOfNodesXi-1)
-        if(fluidVelocityInterpolation == quadratic):
+        if(fluidVelocityInterpolation == QUADRATIC):
             localNodes[1] = localNodes[localNodeIdx100] - 1
             localNodes[3] = localNodes[localNodeIdx000] - 1
             localNodes[4] = localNodes[localNodeIdx100] + 1
@@ -375,7 +376,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
             linearNodes = [localNodes[localNodeIdx000],localNodes[localNodeIdx100],localNodes[localNodeIdx010],localNodes[localNodeIdx110]]
             if (debug):
                 print('    Element %8d; Nodes: %8d, %8d, %8d, %8d' % (elementNumber,linearNodes[0],linearNodes[1],linearNodes[2],linearNodes[3]))
-            if (fluidVelocityInterpolation==quadratic):
+            if (fluidVelocityInterpolation==QUADRATIC):
                 print('                      Nodes: %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d' % \
                       (localNodes[0],localNodes[1],localNodes[2],localNodes[3],localNodes[4],localNodes[5],localNodes[6],localNodes[7],localNodes[8]))
         else:
@@ -385,7 +386,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
             localNodes[localNodeIdx111] = localNodes[localNodeIdx110]+numberOfNodesPerLength*(numberOfNodesXi-1)
             linearNodes = [localNodes[localNodeIdx000],localNodes[localNodeIdx100],localNodes[localNodeIdx010],localNodes[localNodeIdx110], \
                            localNodes[localNodeIdx001],localNodes[localNodeIdx101],localNodes[localNodeIdx011],localNodes[localNodeIdx111]]
-            if (fluidVelocityInterpolation == quadratic):
+            if (fluidVelocityInterpolation == QUADRATIC):
                 localNodes[9] = localNodes[0]+numberOfNodesPerLength
                 localNodes[10] = localNodes[1]+numberOfNodesPerLength
                 localNodes[11] = localNodes[2]+numberOfNodesPerLength
@@ -403,7 +404,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
             if (debug):
                 print('    Element %8d; Nodes: %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d' % \
                       (elementNumber,linearNodes[0],linearNodes[1],linearNodes[2],linearNodes[3],linearNodes[4],linearNodes[5],linearNodes[6],linearNodes[7]))
-                if (fluidVelocityInterpolation==quadratic):
+                if (fluidVelocityInterpolation==QUADRATIC):
                     print('                      Nodes: %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d' % \
                           (localNodes[0],localNodes[1],localNodes[2],localNodes[3],localNodes[4],localNodes[5],localNodes[6],localNodes[7],localNodes[8]))
                     print('                             %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d' % \
@@ -432,7 +433,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                         localNodes[localNodeIdx110] = 4*numberOfNodesPerBlock+(numberOfSquareElements*(numberOfNodesXi-1)-1)*\
                                                       (numberOfNodesXi-2)+(numberOfNodesXi-1)+\
                                                       (zElementIdx-1)*numberOfNodesPerLength*(numberOfNodesXi-1)
-                        if(fluidVelocityInterpolation == quadratic):
+                        if(fluidVelocityInterpolation == QUADRATIC):
                             localNodes[1] = localNodes[localNodeIdx100] - 1
                             localNodes[3] = localNodes[localNodeIdx000] - 1
                             localNodes[4] = localNodes[localNodeIdx110] - numberOfSquareElements*(numberOfNodesXi-1)
@@ -450,7 +451,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                         localNodes[localNodeIdx110] = numberOfSquareElements*(numberOfNodesXi-1)*\
                                                       numberOfArmElements*(numberOfNodesXi-1)+(numberOfNodesXi-1)+\
                                                       (zElementIdx-1)*numberOfNodesPerLength*(numberOfNodesXi-1)
-                        if(fluidVelocityInterpolation == quadratic):
+                        if(fluidVelocityInterpolation == QUADRATIC):
                             localNodes[1] = localNodes[localNodeIdx000] + 1
                             localNodes[3] = localNodes[localNodeIdx010] - numberOfSquareElements*(numberOfNodesXi-1) + 1
                             localNodes[4] = localNodes[3] + 1
@@ -469,7 +470,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                                                       (numberOfNodesXi-2)+(xElementIdx-1)*(numberOfNodesXi-1)+\
                                                       (zElementIdx-1)*numberOfNodesPerLength*(numberOfNodesXi-1)
                         localNodes[localNodeIdx110] = localNodes[localNodeIdx010]+(numberOfNodesXi-1)
-                        if(fluidVelocityInterpolation == quadratic):
+                        if(fluidVelocityInterpolation == QUADRATIC):
                             localNodes[1] = localNodes[localNodeIdx000] + 1
                             localNodes[3] = localNodes[localNodeIdx010] - numberOfSquareElements*(numberOfNodesXi-1) + 1
                             localNodes[4] = localNodes[3] + 1
@@ -491,7 +492,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                                                       (zElementIdx-1)*numberOfNodesPerLength*(numberOfNodesXi-1)
                         localNodes[localNodeIdx110] = 2*numberOfNodesPerBlock-(numberOfNodesXi-1)+\
                                                       (zElementIdx-1)*numberOfNodesPerLength*(numberOfNodesXi-1)
-                        if(fluidVelocityInterpolation == quadratic):
+                        if(fluidVelocityInterpolation == QUADRATIC):
                             localNodes[1] = localNodes[localNodeIdx100] - 1
                             localNodes[3] = localNodes[localNodeIdx000] - 1
                             localNodes[4] = localNodes[1] + numberOfSquareElements*(numberOfNodesXi-1) - 1
@@ -512,7 +513,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                                                       (zElementIdx-1)*numberOfNodesPerLength*(numberOfNodesXi-1)
                         localNodes[localNodeIdx110] = numberOfNodesPerBlock+\
                                                       (zElementIdx-1)*numberOfNodesPerLength*(numberOfNodesXi-1)
-                        if(fluidVelocityInterpolation == quadratic):
+                        if(fluidVelocityInterpolation == QUADRATIC):
                             localNodes[1] = localNodes[localNodeIdx000] + 1
                             localNodes[3] = localNodes[localNodeIdx000] + numberOfSquareElements*(numberOfNodesXi-1) - 1
                             localNodes[4] = localNodes[3] + 1
@@ -528,7 +529,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                         localNodes[localNodeIdx010] = 2*numberOfNodesPerBlock-(xElementIdx-1)*(numberOfNodesXi-1)+\
                                                       (zElementIdx-1)*numberOfNodesPerLength*(numberOfNodesXi-1)
                         localNodes[localNodeIdx110] = localNodes[localNodeIdx010]-(numberOfNodesXi-1)
-                        if(fluidVelocityInterpolation == quadratic):
+                        if(fluidVelocityInterpolation == QUADRATIC):
                             localNodes[1] = localNodes[localNodeIdx000] + 1
                             localNodes[3] = localNodes[localNodeIdx000] + numberOfSquareElements*(numberOfNodesXi-1) - 1
                             localNodes[4] = localNodes[3] + 1
@@ -545,7 +546,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                         localNodes[localNodeIdx010] = localNodes[localNodeIdx000]-(numberOfNodesXi-1)
                         localNodes[localNodeIdx110] = localNodes[localNodeIdx100]+(numberOfSquareElements*(numberOfNodesXi-1)-1)*\
                                                       (numberOfNodesXi-1)
-                        if(fluidVelocityInterpolation == quadratic):
+                        if(fluidVelocityInterpolation == QUADRATIC):
                             localNodes[1] = localNodes[localNodeIdx100] - 1
                             localNodes[3] = localNodes[localNodeIdx000] - 1
                             localNodes[4] = localNodes[localNodeIdx110] - numberOfSquareElements*(numberOfNodesXi-1) 
@@ -562,7 +563,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                         localNodes[localNodeIdx010] = localNodes[localNodeIdx000]+(numberOfSquareElements*(numberOfNodesXi-1)-1)*\
                                                       (numberOfNodesXi-1)
                         localNodes[localNodeIdx110] = localNodes[localNodeIdx100]+(numberOfNodesXi-1)
-                        if(fluidVelocityInterpolation == quadratic):
+                        if(fluidVelocityInterpolation == QUADRATIC):
                             localNodes[1] = localNodes[localNodeIdx000] + 1
                             localNodes[3] = localNodes[localNodeIdx010] - numberOfSquareElements*(numberOfNodesXi-1) + 1
                             localNodes[4] = localNodes[3] + 1
@@ -577,7 +578,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                         localNodes[localNodeIdx010] = localNodes[localNodeIdx000]+(numberOfSquareElements*(numberOfNodesXi-1)-1)*\
                                                       (numberOfNodesXi-1)
                         localNodes[localNodeIdx110] = localNodes[localNodeIdx010]+(numberOfNodesXi-1)
-                        if(fluidVelocityInterpolation == quadratic):
+                        if(fluidVelocityInterpolation == QUADRATIC):
                             localNodes[1] = localNodes[localNodeIdx000] + 1
                             localNodes[3] = localNodes[localNodeIdx000] + numberOfSquareElements*(numberOfNodesXi-1) - 1
                             localNodes[4] = localNodes[3] + 1
@@ -587,7 +588,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                     linearNodes = [localNodes[localNodeIdx000],localNodes[localNodeIdx100],localNodes[localNodeIdx010],localNodes[localNodeIdx110]]
                     if (debug):
                         print('    Element %8d; Nodes: %8d, %8d, %8d, %8d' % (elementNumber,linearNodes[0],linearNodes[1],linearNodes[2],linearNodes[3]))
-                    if (fluidVelocityInterpolation==quadratic):
+                    if (fluidVelocityInterpolation==QUADRATIC):
                         print('                      Nodes: %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d' % \
                               (localNodes[0],localNodes[1],localNodes[2],localNodes[3],localNodes[4],localNodes[5],localNodes[6],localNodes[7],localNodes[8]))
                 else:
@@ -597,7 +598,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                     localNodes[localNodeIdx111] = localNodes[localNodeIdx110]+numberOfNodesPerLength*(numberOfNodesXi-1)
                     linearNodes = [localNodes[localNodeIdx000],localNodes[localNodeIdx100],localNodes[localNodeIdx010],localNodes[localNodeIdx110], \
                                    localNodes[localNodeIdx001],localNodes[localNodeIdx101],localNodes[localNodeIdx011],localNodes[localNodeIdx111]]
-                    if (fluidVelocityInterpolation == quadratic):
+                    if (fluidVelocityInterpolation == QUADRATIC):
                         localNodes[9] = localNodes[0]+numberOfNodesPerLength
                         localNodes[10] = localNodes[1]+numberOfNodesPerLength
                         localNodes[11] = localNodes[2]+numberOfNodesPerLength
@@ -615,7 +616,7 @@ for zElementIdx in range(1,max(numberOfLengthElements+1,2)):
                         if (debug):
                             print('    Element %8d; Nodes: %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d' % \
                                   (elementNumber,linearNodes[0],linearNodes[1],linearNodes[2],linearNodes[3],linearNodes[4],linearNodes[5],linearNodes[6],linearNodes[7]))
-                            if (fluidVelocityInterpolation==quadratic):
+                            if (fluidVelocityInterpolation==QUADRATIC):
                                 print('                      Nodes: %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d' % \
                                       (localNodes[0],localNodes[1],localNodes[2],localNodes[3],localNodes[4],localNodes[5],localNodes[6],localNodes[7],localNodes[8]))
                                 print('                             %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d, %8d' % \
