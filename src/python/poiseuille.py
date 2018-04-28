@@ -145,15 +145,19 @@ fluidProblemUserNumber = 1
 #  Initialise OpenCMISS
 #================================================================================================================================
 
+worldRegion = iron.Region()
+iron.Context.WorldRegionGet(worldRegion)
+
 # Set the OpenCMISS random seed so that we can test this example by using the
 # same parallel decomposition
-numberOfRandomSeeds = iron.RandomSeedsSizeGet()
+numberOfRandomSeeds = iron.Context.RandomSeedsSizeGet()
 randomSeeds = [0]*numberOfRandomSeeds
 randomSeeds[0] = 100
-iron.RandomSeedsSet(randomSeeds)
+iron.Context.RandomSeedsSet(randomSeeds)
 
 # Get the computational nodes info
 computationEnvironment = iron.ComputationEnvironment()
+iron.Context.ComputationEnvironmentGet(computationEnvironment)
 numberOfComputationalNodes = computationEnvironment.NumberOfWorldNodesGet()
 computationalNodeNumber = computationEnvironment.WorldNodeNumberGet()
 
@@ -167,7 +171,7 @@ if (progressDiagnostics):
 
 # Create a RC coordinate system for the fluid region
 fluidCoordinateSystem = iron.CoordinateSystem()
-fluidCoordinateSystem.CreateStart(fluidCoordinateSystemUserNumber)
+fluidCoordinateSystem.CreateStart(fluidCoordinateSystemUserNumber,iron.Context)
 fluidCoordinateSystem.DimensionSet(numberOfDimensions)
 fluidCoordinateSystem.CreateFinish()
 
@@ -183,7 +187,7 @@ if (progressDiagnostics):
 
 # Create a fluid region
 fluidRegion = iron.Region()
-fluidRegion.CreateStart(fluidRegionUserNumber,iron.WorldRegion)
+fluidRegion.CreateStart(fluidRegionUserNumber,worldRegion)
 fluidRegion.label = 'FluidRegion'
 fluidRegion.coordinateSystem = fluidCoordinateSystem
 fluidRegion.CreateFinish()
@@ -202,7 +206,7 @@ numberOfNodesXi = fluidVelocityInterpolation+1
 numberOfGaussXi = fluidVelocityInterpolation+1
 
 fluidVelocityBasis = iron.Basis()
-fluidVelocityBasis.CreateStart(fluidVelocityBasisUserNumber)
+fluidVelocityBasis.CreateStart(fluidVelocityBasisUserNumber,iron.Context)
 fluidVelocityBasis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 fluidVelocityBasis.numberOfXi = numberOfDimensions
 if (fluidVelocityInterpolation == LINEAR):
@@ -216,7 +220,7 @@ fluidVelocityBasis.quadratureNumberOfGaussXi = [numberOfGaussXi]*numberOfDimensi
 fluidVelocityBasis.CreateFinish()
 
 fluidPressureBasis = iron.Basis()
-fluidPressureBasis.CreateStart(fluidPressureBasisUserNumber)
+fluidPressureBasis.CreateStart(fluidPressureBasisUserNumber,iron.Context)
 fluidPressureBasis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 fluidPressureBasis.numberOfXi = numberOfDimensions
 fluidPressureBasis.interpolationXi = [iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*numberOfDimensions
@@ -1019,7 +1023,7 @@ else:
     fluidProblemSpecification = [iron.ProblemClasses.FLUID_MECHANICS,
                                  iron.ProblemTypes.NAVIER_STOKES_EQUATION,
                                  iron.ProblemSubtypes.TRANSIENT_NAVIER_STOKES]
-fluidProblem.CreateStart(fluidProblemUserNumber,fluidProblemSpecification)
+fluidProblem.CreateStart(fluidProblemUserNumber,iron.Context,fluidProblemSpecification)
 fluidProblem.CreateFinish()
 
 if (progressDiagnostics):
