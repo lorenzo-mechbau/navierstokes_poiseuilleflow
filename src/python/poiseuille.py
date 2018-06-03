@@ -669,7 +669,7 @@ if (progressDiagnostics):
 fluidGeometricField = iron.Field()
 fluidGeometricField.CreateStart(fluidGeometricFieldUserNumber,fluidRegion)
 # Set the decomposition to use
-fluidGeometricField.MeshDecompositionSet(fluidDecomposition)
+fluidGeometricField.DecompositionSet(fluidDecomposition)
 # Set the scaling to use
 fluidGeometricField.ScalingTypeSet(iron.FieldScalingTypes.NONE)
 fluidGeometricField.VariableLabelSet(iron.FieldVariableTypes.U,'FluidGeometry')
