@@ -24,12 +24,13 @@ maxInletFlow = 1.0
 startTime = 0.0
 stopTime  = 2.0
 timeStep  = 0.1
+file_root_directory = os.path.dirname(__file__)
 
 # Override with command line arguments if need be
 print sys.argv
 if len(sys.argv) > 1:
-    if len(sys.argv) > 9:
-        sys.exit('Error: too many arguments - currently only accepting 8 options: numberOfSquareElements numberOfArmElements numberOfLengthElements Re maxInletFlow startTime stopTime timeStep')        
+    if len(sys.argv) > 10:
+        sys.exit('Error: too many arguments - currently only accepting 8 options: numberOfSquareElements numberOfArmElements numberOfLengthElements Re maxInletFlow startTime stopTime timeStep path/to/cellml_input_file')        
     numberOfSquareElements = int(sys.argv[1])
     if len(sys.argv) > 2:
         numberOfArmElements = int(sys.argv[2])
@@ -45,6 +46,8 @@ if len(sys.argv) > 1:
         stopTime = float(sys.argv[7])
     if len(sys.argv) > 8:
         timeStep = float(sys.argv[8])
+    if len(sys.argv) > 9:
+        file_root_directory = sys.argv[9]
 
 LINEAR = 1
 QUADRATIC = 2
@@ -152,10 +155,12 @@ randomSeeds = [0]*numberOfRandomSeeds
 randomSeeds[0] = 100
 iron.RandomSeedsSet(randomSeeds)
 
-# Get the computational nodes info
-computationEnvironment = iron.ComputationEnvironment()
-numberOfComputationalNodes = computationEnvironment.NumberOfWorldNodesGet()
-computationalNodeNumber = computationEnvironment.WorldNodeNumberGet()
+# Get the number of computational nodes and this computational node number
+#computationEnvironment = iron.ComputationEnvironment()
+#numberOfComputationalNodes = computationEnvironment.NumberOfWorldNodesGet()
+#computationalNodeNumber = computationEnvironment.WorldNodeNumberGet()
+numberOfComputationalNodes = iron.ComputationalNumberOfNodesGet()
+computationalNodeNumber = iron.ComputationalNodeNumberGet()
 
 #================================================================================================================================
 #  Coordinate Systems
@@ -887,7 +892,8 @@ if (progressDiagnostics):
 # Create CellML equations for the temporal boundary conditions
 bcCellML = iron.CellML()
 bcCellML.CreateStart(bcCellMLUserNumber,fluidRegion)
-bcCellMLIdx = bcCellML.ModelImport("input/poiseuilleinlet.cellml")
+bcCellMLIdx_fileName = os.path.join(file_root_directory, "input/poiseuilleinlet.cellml")
+bcCellMLIdx = bcCellML.ModelImport(bcCellMLIdx_fileName)
 bcCellML.VariableSetAsKnown(bcCellMLIdx,"main/pipeRadius")
 bcCellML.VariableSetAsKnown(bcCellMLIdx,"main/length")
 bcCellML.VariableSetAsKnown(bcCellMLIdx,"main/dynamicViscosity")
@@ -1275,4 +1281,7 @@ elapsed = end - start
 print('Calculation Time = %3.4f' %elapsed)
 print('Problem solved!')
 print('#')
+
+# Finalise OpenCMISS-Iron
+iron.Finalise()
 
